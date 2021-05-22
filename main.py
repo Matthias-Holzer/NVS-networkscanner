@@ -1,12 +1,15 @@
+#Command to test:
+#python3 main.py -n 192.168.0.0/24
+
 import socket
 import scapy.all as scapy
 import argparse
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-n', '--network', dest='network', help='Target IP Address/Adresses')
+    parser.add_argument('-n', '--network', dest='network', help='Network with mask to scann')
+    parser.add_argument('-p', '--port', dest='port', help='Ports to scann')
     options = parser.parse_args()
-
 
     if not options.network:
         parser.error("[-] Please specify an IP Address or Addresses, use --help for more info.")
@@ -27,19 +30,6 @@ def scan(ip):
 
     return result
 
-def display_result(result):
-    print("-----------------------------------\nIP Address\tMAC Address\n-----------------------------------")
-    for i in result:
-        print("{}\t{}".format(i["ip"], i["mac"]))
-
-
-options = get_args()
-scanned_output = scan(options.network)
-display_result(scanned_output)
-
-
-
-
 def scanPort(host, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -50,11 +40,19 @@ def scanPort(host, port):
         print("Port closed: " + str(port))
 
 
-#host = "188.166.166.20"
-#host = "192.168.0.66"
-host = "192.168.0.11"
+def display_result(result, input):
+    print("-----------------------------------\nIP Address\tMAC Address\n-----------------------------------")
+    for i in result:
+        print("{}\t{}".format(i["ip"], i["mac"]))
+        ports = str(input).split(',')
+        for port in ports:
+            scanPort(i["ip"],port)
 
 
-for port in [21, 22, 80]:
-    scanPort(host, port)
+options = get_args()
+scanned_output = scan(options.network)
+display_result(scanned_output, options.port)
+
+
+
 print("done")
