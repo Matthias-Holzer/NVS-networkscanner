@@ -1,5 +1,5 @@
 #Command to test:
-#python3 main.py -n 192.168.0.0/24
+#python3 main.py -n 192.168.0.0/24 -p 80,443
 
 import socket
 import scapy.all as scapy
